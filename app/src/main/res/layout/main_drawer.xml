@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="160dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:gravity="bottom"
+    android:background="@color/colorPrimary"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/user_avatar"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        fresco:placeholderImage="@drawable/ic_account_circle_white_48dp"
+        fresco:roundAsCircle="true"/>
+
+    <TextView android:id="@+id/user_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:text="Guest"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+
+    <TextView android:id="@+id/user_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="guest@hijinhu.me"/>
+
+</LinearLayout>

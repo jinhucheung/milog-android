@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/group_user"
+        android:visible="false">
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings_black_24dp"
+            android:title="设置" />
+        <item
+            android:id="@+id/nav_sign_out"
+            android:title="退出" />
+    </group>
+    <group
+        android:id="@+id/group_guest">
+        <item
+            android:id="@+id/nav_sign_up"
+            android:title="注册" />
+        <item
+            android:id="@+id/nav_sign_in"
+            android:title="登录" />
+    </group>
+</menu>
