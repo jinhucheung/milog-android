@@ -25,11 +25,25 @@ public class BaseActivity extends AppCompatActivity implements TurbolinksAdapter
     protected static final boolean DEBUG = Constants.DEBUG;
     protected static String TAG = BaseActivity.class.getSimpleName();
 
-    protected static final String BASE_URL = Constants.HOST_URL;
+    protected static final String HOST_URL = Constants.HOST_URL;
     protected static final String INTENT_URL = "intentUrl";
 
+    protected static final String ACT_ACCOUNT = "account";
+
     protected String location;
-    protected TurbolinksView mturbolinksView;
+    protected TurbolinksView mTurbolinksView;
+
+    private ValueCallback<Uri[]> mFilePathCallback;
+    private boolean onSelectFileCallback = false;
+
+    class WebChromeClient extends android.webkit.WebChromeClient {
+        @Override
+        public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
+            mFilePathCallback = filePathCallback;
+            startActivityForResult(fileChooserParams.createIntent(), Constants.REQUEST_SELECT_FILE);
+            return true;
+        }
+    }
 
     // -----------------------------------------------------------------------
     // Activity overrides
@@ -39,11 +53,13 @@ public class BaseActivity extends AppCompatActivity implements TurbolinksAdapter
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        location = getIntent().getStringExtra(INTENT_URL) != null ? getIntent().getStringExtra(INTENT_URL) : BASE_URL;
+        location = getIntent().getStringExtra(INTENT_URL) != null ? getIntent().getStringExtra(INTENT_URL) : HOST_URL;
 
         TurbolinksSession.getDefault(this)
                 .activity(this)
-                .adapter(this);
+                .adapter(this)
+                .getWebView()
+                .setWebChromeClient(new WebChromeClient());
 
         AppManager.getInstance().addActivity(this);
     }
@@ -51,31 +67,32 @@ public class BaseActivity extends AppCompatActivity implements TurbolinksAdapter
     @Override
     protected void onRestart() {
         super.onRestart();
-
-        TurbolinksSession.getDefault(this)
-                .activity(this)
-                .adapter(this)
-                .restoreWithCachedSnapshot(true);
+        if (!onSelectFileCallback && mTurbolinksView != null) {
+            TurbolinksSession.getDefault(this)
+                    .activity(this)
+                    .adapter(this)
+                    .restoreWithCachedSnapshot(true)
+                    .view(mTurbolinksView)
+                    .visit(location);
+        } else {
+            onSelectFileCallback = false;
+        }
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case Constants.REQUEST_SELECT_FILE:
+                if (resultCode == RESULT_OK && data != null) {
+                    mFilePathCallback.onReceiveValue(new Uri[] { data.getData() });
+                } else {
+                    mFilePathCallback.onReceiveValue(null);
+                }
+                onSelectFileCallback = true;
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     // -----------------------------------------------------------------------
@@ -109,12 +126,23 @@ public class BaseActivity extends AppCompatActivity implements TurbolinksAdapter
 
     @Override
     public void visitProposedToLocationWithAction(String location, String action) {
-        Intent intent =  new Intent(this, MainActivity.class);
+        Intent intent =  new Intent(this, EmptyActivity.class);
         intent.putExtra(INTENT_URL, location);
         this.startActivity(intent);
     }
 
     protected void handleError(int code) {
         Log.d(TAG, "handleError: " + code);
+    }
+
+    // -----------------------------------------------------------------------
+    // Helper
+    // -----------------------------------------------------------------------
+    protected  void signOut() {
+        TurbolinksSession.getDefault(this)
+                         .getWebView()
+                         .evaluateJavascript(
+                                 "$.ajax({url: '/signout', method: 'DELETE'})",
+                                 null);
     }
 }

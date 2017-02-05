@@ -33,7 +33,7 @@ public final class AppManager extends Application {
     }
 
     public void addActivity(Activity activity) {
-        if (activity == null) { activities.add(activity); }
+        if (activity != null) { activities.add(activity); }
     }
 
     public boolean removeActivity(Activity activity) { return activities.remove(activity); }

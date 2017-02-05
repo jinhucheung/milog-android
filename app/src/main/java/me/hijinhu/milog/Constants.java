@@ -9,4 +9,6 @@ public class Constants {
     public static final boolean DEBUG = true;
 
     public static final String HOST_URL = "http://hijinhu.me";
+
+    public static final int REQUEST_SELECT_FILE = 0x100;
 }
