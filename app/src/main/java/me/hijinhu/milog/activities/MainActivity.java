@@ -24,6 +24,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -36,7 +38,7 @@ import me.hijinhu.milog.utils.ToastUtil;
  * <p>
  * Created by kumho on 17-1-15.
  */
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final int TIME_WAIT_EXIT = 2500;
@@ -52,6 +54,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private JSONObject mCurrentUserMeta;
 
+    private boolean mSearched = false;
 
     // -----------------------------------------------------------------------
     // Activity overrides
@@ -126,7 +129,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         SearchView searchView =
                 (SearchView) MenuItemCompat.getActionView(searchItem);
 
-
+        searchView.setOnQueryTextListener(this);
+        MenuItemCompat.setOnActionExpandListener(searchItem, new SearchExpandListener(this));
         return true;
     }
 
@@ -219,5 +223,53 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             mUserEmailTextView.setText("guest@hijinhu.me");
             mUserAvatarDraweeView.setImageResource(R.drawable.ic_account_circle_white_48dp);
         }
+    }
+
+    // -----------------------------------------------------------------------
+    // Search
+    // -----------------------------------------------------------------------
+    class SearchExpandListener implements MenuItemCompat.OnActionExpandListener {
+        private MainActivity mActivity;
+
+        public SearchExpandListener(MainActivity activity) {
+            mActivity = activity;
+        }
+
+        @Override
+        public boolean onMenuItemActionExpand(MenuItem item) {
+            return true;
+        }
+
+        @Override
+        public boolean onMenuItemActionCollapse(MenuItem item) {
+            if (mSearched) {
+                mActivity.searchCLose();
+            }
+            return true;
+        }
+    }
+
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        try {
+            mSearched = true;
+            location = HOST_URL + "/community/search?token=" + URLEncoder.encode(query, "UTF-8");
+            TurbolinksSession.getDefault(this).visit(location);
+        } catch (UnsupportedEncodingException e){
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
+    }
+
+    private void searchCLose() {
+        location = HOST_URL + "/community";
+        TurbolinksSession.getDefault(this).visit(location);
+        mSearched = false;
     }
 }
