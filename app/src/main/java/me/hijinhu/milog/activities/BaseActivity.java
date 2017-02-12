@@ -28,7 +28,7 @@ public class BaseActivity extends AppCompatActivity implements TurbolinksAdapter
     protected static final String HOST_URL = Constants.HOST_URL;
     protected static final String INTENT_URL = "intentUrl";
 
-    protected static final String ACT_ACCOUNT = "account";
+    protected static final String ACT_ADVANCE = "advance";
 
     protected String location;
     protected TurbolinksView mTurbolinksView;

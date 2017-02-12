@@ -140,19 +140,29 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         mDrawerLayout.closeDrawer(GravityCompat.START);
-        switch (item.getItemId()) {
-            case R.id.nav_sign_up:
-                visitProposedToLocationWithAction(HOST_URL + "/signup", ACT_ACCOUNT);
-                break;
-            case R.id.nav_sign_in:
-                visitProposedToLocationWithAction(HOST_URL + "/signin", ACT_ACCOUNT);
-                break;
-            case R.id.nav_sign_out:
-                signOut();
-                break;
-            case R.id.nav_settings:
-                visitProposedToLocationWithAction(HOST_URL + "/account/edit", ACT_ACCOUNT);
-                break;
+        try {
+            switch (item.getItemId()) {
+                case R.id.nav_sign_up:
+                    visitProposedToLocationWithAction(HOST_URL + "/signup", ACT_ADVANCE);
+                    break;
+                case R.id.nav_sign_in:
+                    visitProposedToLocationWithAction(HOST_URL + "/signin", ACT_ADVANCE);
+                    break;
+                case R.id.nav_sign_out:
+                    signOut();
+                    break;
+                case R.id.nav_profiles:
+                    visitProposedToLocationWithAction(HOST_URL + "/account/edit", ACT_ADVANCE);
+                    break;
+                case R.id.nav_userspace:
+                    visitProposedToLocationWithAction(HOST_URL + "/" + mCurrentUserMeta.get("username"), ACT_ADVANCE);
+                    break;
+                case R.id.nav_blog:
+                    visitProposedToLocationWithAction(HOST_URL + "/" + mCurrentUserMeta.get("username") + "/blog", ACT_ADVANCE);
+                    break;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
         return true;
     }
