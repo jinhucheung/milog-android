@@ -131,6 +131,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         searchView.setOnQueryTextListener(this);
         MenuItemCompat.setOnActionExpandListener(searchItem, new SearchExpandListener(this));
+
+        MenuItem notifyItem = menu.findItem(R.id.action_notification);
+        notifyItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                visitProposedToLocationWithAction(HOST_URL + "/notifications", ACT_ADVANCE);
+                return true;
+            }
+        });
         return true;
     }
 
@@ -160,11 +169,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 case R.id.nav_blog:
                     visitProposedToLocationWithAction(HOST_URL + "/" + mCurrentUserMeta.get("username") + "/blog", ACT_ADVANCE);
                     break;
+                case R.id.nav_drafts:
+                    visitProposedToLocationWithAction(HOST_URL + "/" + mCurrentUserMeta.get("username") + "/drafts", ACT_ADVANCE);
+                    break;
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return true;
+    }
+
+    public void addArticle(View v) {
+        visitProposedToLocationWithAction(HOST_URL + "/articles/new", ACT_ADVANCE);
     }
 
     // -----------------------------------------------------------------------
@@ -193,7 +209,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 if (value.equalsIgnoreCase("null")) {
                     mActivity.setCurrentUserMeta(null);
                 } else {
-                        mActivity.setCurrentUserMeta(new JSONObject(value));
+                    mActivity.setCurrentUserMeta(new JSONObject(value));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

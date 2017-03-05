@@ -3,7 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/action_search"
         android:title="搜索"
-        android:icon="@drawable/ic_search_white_24dp"
+        android:icon="@drawable/ic_search_white_18dp"
         app:showAsAction="ifRoom|collapseActionView"
         app:actionViewClass="android.support.v7.widget.SearchView" />
+    <item android:id="@+id/action_notification"
+        android:title="通知"
+        android:icon="@drawable/ic_notification_white_21dp"
+        app:showAsAction="always"
+        />
 </menu>

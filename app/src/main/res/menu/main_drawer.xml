@@ -4,6 +4,10 @@
         android:id="@+id/group_user"
         android:visible="false">
         <item
+            android:id="@+id/nav_profiles"
+            android:title="个人资料" />
+
+        <item
             android:id="@+id/nav_userspace"
             android:title="我的动态"
             />
@@ -12,8 +16,10 @@
             android:title="我的博客"
             />
         <item
-            android:id="@+id/nav_profiles"
-            android:title="个人资料" />
+            android:id="@+id/nav_drafts"
+            android:title="草稿箱"
+            />
+
         <item
             android:id="@+id/nav_sign_out"
             android:title="退出" />
