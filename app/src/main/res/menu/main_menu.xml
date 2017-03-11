@@ -10,5 +10,6 @@
         android:title="通知"
         android:icon="@drawable/ic_notification_white_21dp"
         app:showAsAction="always"
+        app:actionLayout="@layout/notification_badge"
         />
 </menu>

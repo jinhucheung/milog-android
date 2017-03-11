@@ -22,7 +22,6 @@ import com.facebook.drawee.view.SimpleDraweeView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -35,7 +34,7 @@ import me.hijinhu.milog.utils.ToastUtil;
 
 /**
  * MainActivity: Milog Index
- * <p>
+ * <p/>
  * Created by kumho on 17-1-15.
  */
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener {
@@ -51,6 +50,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private SimpleDraweeView mUserAvatarDraweeView;
     private TextView mUserNameTextView;
     private TextView mUserEmailTextView;
+
+    private TextView mNotificationTextView;
 
     private JSONObject mCurrentUserMeta;
 
@@ -133,13 +134,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         MenuItemCompat.setOnActionExpandListener(searchItem, new SearchExpandListener(this));
 
         MenuItem notifyItem = menu.findItem(R.id.action_notification);
-        notifyItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                visitProposedToLocationWithAction(HOST_URL + "/notifications", ACT_ADVANCE);
-                return true;
-            }
-        });
+        mNotificationTextView = (TextView) MenuItemCompat.getActionView(notifyItem).findViewById(R.id.notification_text);
         return true;
     }
 
@@ -183,6 +178,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         visitProposedToLocationWithAction(HOST_URL + "/articles/new", ACT_ADVANCE);
     }
 
+    public void visitNotification(View v) {
+        visitProposedToLocationWithAction(HOST_URL + "/notifications", ACT_ADVANCE);
+    }
+
     // -----------------------------------------------------------------------
     // TurbolinksAdapter overrides
     // -----------------------------------------------------------------------
@@ -195,16 +194,26 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         super.visitCompleted();
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
     class VisitCompletedCallback implements ValueCallback<String> {
         MainActivity mActivity;
 
-        public VisitCompletedCallback(MainActivity activity){
+        public VisitCompletedCallback(MainActivity activity) {
             mActivity = activity;
         }
 
         @Override
         public void onReceiveValue(String value) {
-            if (DEBUG) { Log.d(TAG, value); }
+            if (DEBUG) { Log.d(TAG, value);}
             try {
                 if (value.equalsIgnoreCase("null")) {
                     mActivity.setCurrentUserMeta(null);
@@ -214,7 +223,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            mActivity.updateNavigationView();
+            mActivity.updateView();
         }
     }
 
@@ -228,7 +237,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     // -----------------------------------------------------------------------
     // Helper
     // -----------------------------------------------------------------------
-    private void updateNavigationView(){
+    private void updateView() {
         Menu naviMenu = mNavigationView.getMenu();
         if (mCurrentUserMeta != null) {
             naviMenu.setGroupVisible(R.id.group_user, true);
@@ -238,6 +247,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 mUserNameTextView.setText(mCurrentUserMeta.getString("username"));
                 mUserEmailTextView.setText(mCurrentUserMeta.getString("email"));
                 mUserAvatarDraweeView.setImageURI(mCurrentUserMeta.getString("avatarUrl"));
+
+                updateNotificationText(mCurrentUserMeta.getInt("notifyCount"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -249,6 +260,21 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             mUserEmailTextView.setText("guest@hijinhu.me");
             mUserAvatarDraweeView.setImageResource(R.drawable.ic_account_circle_white_48dp);
         }
+    }
+
+    public void updateNotificationText(final int unread_count) {
+        if (mNotificationTextView == null) return;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (unread_count == 0)
+                    mNotificationTextView.setVisibility(View.INVISIBLE);
+                else {
+                    mNotificationTextView.setVisibility(View.VISIBLE);
+                    mNotificationTextView.setText(Integer.toString(unread_count));
+                }
+            }
+        });
     }
 
     // -----------------------------------------------------------------------
@@ -282,7 +308,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             mSearched = true;
             location = HOST_URL + "/community/search?token=" + URLEncoder.encode(query, "UTF-8");
             TurbolinksSession.getDefault(this).visit(location);
-        } catch (UnsupportedEncodingException e){
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return true;
