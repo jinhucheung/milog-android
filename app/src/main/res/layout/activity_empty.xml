@@ -15,9 +15,17 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
-    <com.basecamp.turbolinks.TurbolinksView
-        android:id="@+id/empty_turbolinks_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        <me.hijinhu.milog.widget.TurbolinksSwipeRefreshLayout
+            android:id="@+id/swipeRefresh_layout"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            >
+
+            <com.basecamp.turbolinks.TurbolinksView
+                android:id="@+id/empty_turbolinks_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </me.hijinhu.milog.widget.TurbolinksSwipeRefreshLayout>
 
 </LinearLayout>

@@ -6,6 +6,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -31,13 +32,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import me.hijinhu.milog.R;
 import me.hijinhu.milog.utils.ToastUtil;
+import me.hijinhu.milog.widget.TurbolinksSwipeRefreshLayout;
+
 
 /**
  * MainActivity: Milog Index
  * <p/>
  * Created by kumho on 17-1-15.
  */
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener, TurbolinksSwipeRefreshLayout.TurbolinksScrollUpCallback {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final int TIME_WAIT_EXIT = 2500;
@@ -52,6 +55,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private TextView mUserEmailTextView;
 
     private TextView mNotificationTextView;
+
+    private TurbolinksSwipeRefreshLayout mSwipeRefreshLayout;
 
     private JSONObject mCurrentUserMeta;
 
@@ -86,6 +91,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mUserNameTextView = (TextView) headerView.findViewById(R.id.user_name);
         mUserEmailTextView = (TextView) headerView.findViewById(R.id.user_email);
 
+
         mTurbolinksView = (TurbolinksView) findViewById(R.id.turbolinks_view);
 
         location = HOST_URL + "/community";
@@ -93,6 +99,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         TurbolinksSession.getDefault(this)
                 .view(mTurbolinksView)
                 .visit(location);
+
+        mSwipeRefreshLayout = (TurbolinksSwipeRefreshLayout) findViewById(R.id.swipeRefresh_layout);
+        mSwipeRefreshLayout.setProgressViewOffset(true, 50, 200);
+        mSwipeRefreshLayout.setCallback(this);
+        mSwipeRefreshLayout.setOnRefreshListener(
+            new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    TurbolinksSession.getDefault(MainActivity.this).visit(location);
+                }
+            }
+        );
     }
 
     @Override
@@ -188,6 +206,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public void visitCompleted() {
+        mSwipeRefreshLayout.setRefreshing(false);
         TurbolinksSession.getDefault(this).getWebView().evaluateJavascript(
                 "$('meta[name=\"current-user\"]').data()",
                 new VisitCompletedCallback(this));
@@ -204,6 +223,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         super.onStop();
     }
 
+    @Override
+    public boolean canChildScrollUp() {
+        return TurbolinksSession.getDefault(this).getWebView().getScrollY() > 0;
+    }
+
+
     class VisitCompletedCallback implements ValueCallback<String> {
         MainActivity mActivity;
 
@@ -213,7 +238,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         @Override
         public void onReceiveValue(String value) {
-            if (DEBUG) { Log.d(TAG, value);}
+            if (DEBUG) { Log.d(TAG, value); }
             try {
                 if (value.equalsIgnoreCase("null")) {
                     mActivity.setCurrentUserMeta(null);
