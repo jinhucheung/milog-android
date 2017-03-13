@@ -126,8 +126,16 @@ public class BaseActivity extends AppCompatActivity implements TurbolinksAdapter
 
     @Override
     public void visitProposedToLocationWithAction(String location, String action) {
-        Intent intent =  new Intent(this, EmptyActivity.class);
-        intent.putExtra(INTENT_URL, location);
+        Intent intent;
+
+        if (location.startsWith(HOST_URL)) {
+            intent =  new Intent(this, EmptyActivity.class);
+            intent.putExtra(INTENT_URL, location);
+        } else {
+            Uri uri = Uri.parse(location);
+            intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(uri);
+        }
         this.startActivity(intent);
     }
 
