@@ -16,4 +16,4 @@ Milog Android 客户端，基于 Turbolinks + Rails + Android Native 的方式�
 
 ## 效果截图
 
-![](http://ogpkf2q99.bkt.clouddn.com/milog-android.png)
+![](milog-android.png)
