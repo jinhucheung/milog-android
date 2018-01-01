@@ -27,20 +27,12 @@
                 />
         </android.support.design.widget.AppBarLayout>
 
-        <me.hijinhu.milog.widget.TurbolinksSwipeRefreshLayout
-            android:id="@+id/swipeRefresh_layout"
-            android:layout_height="match_parent"
-            android:layout_width="match_parent"
-            android:layout_marginTop="?attr/actionBarSize"
-            >
 
-            <com.basecamp.turbolinks.TurbolinksView
+        <com.basecamp.turbolinks.TurbolinksView
                 android:id="@+id/turbolinks_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
-        </me.hijinhu.milog.widget.TurbolinksSwipeRefreshLayout>
 
         <android.support.design.widget.FloatingActionButton
             android:layout_width="wrap_content"
